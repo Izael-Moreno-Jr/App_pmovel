@@ -1,4 +1,6 @@
+import 'package:calendarro/date_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:calendarro/calendarro.dart';
 
 void main() => runApp(MaterialApp(home: Home()));
 
@@ -8,44 +10,27 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white70,
       appBar: AppBar(
-        title: Text("Escalação por agenda"),
+        title: Text("Feriados nascionais"),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-            children: <Widget>[
-              Container(
-                child: Row(
-                  children: <Widget>[
-                    RaisedButton(
-                      color: Colors.blue,
-                      child: Text("Add"),
-                      textColor: Colors.white,
-                      onPressed: null,
+      body: Column(
+        children: <Widget>[
+          Container(
+            child: Calendarro(
+              selectionMode: SelectionMode.SINGLE,
+              displayMode: DisplayMode.MONTHS,
+            ),
+          ),
+          Container(height: 32.0),
 
-                    ),
-                    RaisedButton(
-                      color: Colors.lightBlue,
-                      child: Text("Add"),
-                      textColor: Colors.white,
-                      onPressed: null,
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                child: new FloatingActionButton(
-                  backgroundColor: Colors.blue,
-                  onPressed: () => {},
-                ),
-              )
-            ]
-        ),
+        ],
       ),
       drawer: Drawer(),
     );
