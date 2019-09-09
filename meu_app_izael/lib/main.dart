@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/services.dart';
 
-
-void main() => runApp(MaterialApp(home: Home()));
+void main() => runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: Home()));
 
 class Home extends StatefulWidget {
   @override
@@ -12,19 +14,18 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   DateTime _data = new DateTime.now();
-  TimeOfDay _time = new TimeOfDay.now();
 
   Future _selecionarData(BuildContext context) async{
     final DateTime escolhido = await showDatePicker(
         context: context,
         initialDate: _data,
         firstDate: new DateTime(2017),
-        lastDate: new DateTime(2050)
+        lastDate: new DateTime(2050),
     );
 
     if(escolhido != null && escolhido != _data){
+
       print('data selecionada: ${_data.toString()}');
       setState(() {
         _data = escolhido;
@@ -33,13 +34,20 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<Map> pegarDados() async {
-    http.Response resposta = await http.get(
-        "https://api.calendario.com.br/?json=true&ano=$_data&ibge=3550308&token=aXphZWxtb3Jlbm9qckBnbWFpbC5jb20maGFzaD0xMjU1OTM0ODY"
-    );
+  Future<Map> pegaDados() async {
 
-    return json.decode(resposta.body);
+    String apiUrl = "https://api.calendario.com.br/?json=true&ano=$_data&ibge=3550308&token=aXphZWxtb3Jlbm9qckBnbWFpbC5jb20maGFzaD0xMjU1OTM0ODY";
 
+    http.Response resposta = await http.get(apiUrl);
+
+    var resBodyDate = json.decode(resposta.body);
+
+    if(resposta.statusCode==200){
+      //Tudo Saiu Bem
+      return resBodyDate;
+    } else {
+      throw Exception("Falhou!");
+    }
 
   }
 
@@ -53,7 +61,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.blueAccent,
       ),
       body: FutureBuilder<Map>(
-        future: pegarDados(),
+        future: pegaDados(),
         builder: (context, estado){
           switch (estado.connectionState){
             case ConnectionState.waiting:
@@ -82,7 +90,6 @@ class _HomeState extends State<Home> {
                           onPressed: (){
                             _selecionarData(context);
                           }),
-                      new Text('')
                     ],
                   )
                 );
