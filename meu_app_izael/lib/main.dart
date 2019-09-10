@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+
+var resBodyDate;
 
 void main() => runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -26,7 +29,7 @@ class _HomeState extends State<Home> {
 
     if(escolhido != null && escolhido != _data){
 
-      print('data selecionada: ${_data.toString()}');
+      print(DateFormat('dd/MMMM/yyyy').format(_data));
       setState(() {
         _data = escolhido;
       });
@@ -40,7 +43,8 @@ class _HomeState extends State<Home> {
 
     http.Response resposta = await http.get(apiUrl);
 
-    var resBodyDate = json.decode(resposta.body);
+
+    resBodyDate = json.decode(resposta.body);
 
     if(resposta.statusCode==200){
       //Tudo Saiu Bem
@@ -81,17 +85,22 @@ class _HomeState extends State<Home> {
                   ),
                 );
               } else{
+
+                print(resBodyDate);
+
                 return SingleChildScrollView(
+                  padding: EdgeInsets.only(left: 70.0, top: 80.0, right: 0.0, bottom: 0.0),
                   child:  Column(
                     children: <Widget>[
-                      new Text('data selecionada: ${_data.toString()}' ),
+                      new Text('data selecionada: ${DateFormat('dd/MM/yyyy').format(_data)}'),
                       new RaisedButton(
+                        color: Colors.lightBlue,
                           child: Text('selecione uma data'),
                           onPressed: (){
                             _selecionarData(context);
                           }),
                     ],
-                  )
+                  ),
                 );
               }
           }
