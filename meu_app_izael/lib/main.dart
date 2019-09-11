@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 var resBodyDate;
@@ -29,22 +28,24 @@ class _HomeState extends State<Home> {
 
     if(escolhido != null && escolhido != _data){
 
-      print(DateFormat('dd/MMMM/yyyy').format(_data));
       setState(() {
         _data = escolhido;
+        print(DateFormat('dd/MMMM/yyyy').format(_data));
       });
 
     }
   }
 
-  Future<Map> pegaDados() async {
+  Future<List> pegaDados() async {
 
-    String apiUrl = "https://api.calendario.com.br/?json=true&ano=$_data&ibge=3550308&token=aXphZWxtb3Jlbm9qckBnbWFpbC5jb20maGFzaD0xMjU1OTM0ODY";
+    String apiUrl = "https://api.calendario.com.br/?json=true&ano=2019&ibge=3550308&token=aXphZWxtb3Jlbm9qckBnbWFpbC5jb20maGFzaD0xMjU1OTM0ODY";
 
     http.Response resposta = await http.get(apiUrl);
 
 
     resBodyDate = json.decode(resposta.body);
+
+//    return resBodyDate;
 
     if(resposta.statusCode==200){
       //Tudo Saiu Bem
@@ -64,7 +65,7 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
-      body: FutureBuilder<Map>(
+      body: FutureBuilder<List>(
         future: pegaDados(),
         builder: (context, estado){
           switch (estado.connectionState){
@@ -77,7 +78,7 @@ class _HomeState extends State<Home> {
               ),
             );
             default:
-              if (estado.hasData) {
+              if (!estado.hasData) {
                 return Center(
                   child: Text(
                     "Erro ao Carragar os Dados :(",
@@ -86,26 +87,44 @@ class _HomeState extends State<Home> {
                 );
               } else{
 
-                print(resBodyDate);
+                //verificar(_data.toString());
 
                 return SingleChildScrollView(
                   padding: EdgeInsets.only(left: 70.0, top: 80.0, right: 0.0, bottom: 0.0),
                   child:  Column(
                     children: <Widget>[
-                      new Text('data selecionada: ${DateFormat('dd/MM/yyyy').format(_data)}'),
-                      new RaisedButton(
+                      Text('data selecionada: ${DateFormat('dd/MM/yyyy').format(_data)}'),
+                      RaisedButton(
                         color: Colors.lightBlue,
-                          child: Text('selecione uma data'),
+                          child: Text('selecione uma data', style: TextStyle(color: Colors.white),),
                           onPressed: (){
                             _selecionarData(context);
+
                           }),
+
+                      Text(verificar(DateFormat('dd/MM/yyyy').format(_data)))
                     ],
                   ),
                 );
+
               }
           }
         }
       ),
     );
   }
+}
+
+String verificar (String data){
+  int i = 0;
+  print(data);
+
+  while( i < 27){
+    if(resBodyDate[i]["date"] == data){
+      print(resBodyDate[i]["date"]);
+      return resBodyDate[i]["date"];
+    }
+    i++;
+  }
+  return "Hoje não é feriado";
 }
