@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 var resBodyDate;
-
+int i = 0;
 void main() => runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: Home()));
@@ -30,15 +30,14 @@ class _HomeState extends State<Home> {
 
       setState(() {
         _data = escolhido;
-        print(DateFormat('dd/MMMM/yyyy').format(_data));
+       // print(DateFormat('dd/MMMM/yyyy').format(_data));
       });
 
     }
   }
 
   Future<List> pegaDados() async {
-
-    String apiUrl = "https://api.calendario.com.br/?json=true&ano=2019&ibge=3550308&token=aXphZWxtb3Jlbm9qckBnbWFpbC5jb20maGFzaD0xMjU1OTM0ODY";
+    String apiUrl = "https://api.calendario.com.br/?json=true&ano=${_data.year}&ibge=3550308&token=aXphZWxtb3Jlbm9qckBnbWFpbC5jb20maGFzaD0xMjU1OTM0ODY";
 
     http.Response resposta = await http.get(apiUrl);
 
@@ -87,24 +86,29 @@ class _HomeState extends State<Home> {
                 );
               } else{
 
-                //verificar(_data.toString());
+                print(resBodyDate);
+
 
                 return SingleChildScrollView(
-                  padding: EdgeInsets.only(left: 70.0, top: 80.0, right: 0.0, bottom: 0.0),
-                  child:  Column(
-                    children: <Widget>[
-                      Text('data selecionada: ${DateFormat('dd/MM/yyyy').format(_data)}'),
-                      RaisedButton(
-                        color: Colors.lightBlue,
-                          child: Text('selecione uma data', style: TextStyle(color: Colors.white),),
-                          onPressed: (){
-                            _selecionarData(context);
+                  padding: EdgeInsets.only(left: 20.0, top: 80.0, right: 0.0, bottom: 0.0),
+                  child: Center(
+                    child: Column(
 
-                          }),
+                      children: <Widget>[
+                        Text('data selecionada: ${DateFormat('dd/MM/yyyy').format(_data)}'),
+                        RaisedButton(
+                            color: Colors.lightBlue,
+                            child: Text('selecione uma data', style: TextStyle(color: Colors.white),),
+                            onPressed: (){
+                              _selecionarData(context);
 
-                      Text(verificar(DateFormat('dd/MM/yyyy').format(_data)))
-                    ],
-                  ),
+                            }),
+                        Text(verificarData(DateFormat('dd/MM/yyyy').format(_data))),
+
+
+                      ],
+                    ),
+                  )
                 );
 
               }
@@ -115,16 +119,16 @@ class _HomeState extends State<Home> {
   }
 }
 
-String verificar (String data){
+String verificarData (String data){
   int i = 0;
   print(data);
 
   while( i < 27){
     if(resBodyDate[i]["date"] == data){
-      print(resBodyDate[i]["date"]);
-      return resBodyDate[i]["date"];
+      print(resBodyDate[i]["name"]);
+      return "Nome: \n \n" + resBodyDate[i]["name"] + "\n \n" + "Descrição: \n \n" +resBodyDate[i]["description"];
     }
     i++;
   }
-  return "Hoje não é feriado";
+  return "Não é feriado";
 }
